@@ -8,7 +8,7 @@ The service works by comparing the client's screen width against the range of pe
 
 ## How to Use
 
-Here is an example <img> tag:
+Here is an example img tag:
 
 ```
 <img src="http://src.yourdomain.com/{min:320,max:479,per:1.0,quality:75|min:480,max:767,per:0.4512,quality:75|min:768,max:*,per:0.2208,quality:75}/http://yourdomain.com/images/filename.jpg" />
@@ -24,7 +24,7 @@ The above example covers three width ranges:
 - 480 to 767px
 - 768 to *
 
-The percentage widths are calculated by combining the percentages of all of the image's parent elements, from the immediate parent all the way back to the <body>.
+The percentage widths are calculated by combining the percentages of all of the image's parent elements, from the immediate parent all the way back to the body.
 
 ## Caveats
 
@@ -33,6 +33,7 @@ There's no perfect solution for serving up images for responsive websites. This 
 - One must know _all_ the possible percentage sizes of an image's containing element in all media-query ranges. (This of course takes some calculation - which can be tedious - but it is not difficult.)
 - This method requires Javascript to send the browser's screen width to the server.
 - The client's screen width is stored in the server session so the first virgin load will source all images at whichever resolution is determined by the code - full resolution, mobile-first reduced images, etc. (Currently the {src_ctrl} returns full resolution images.)
+- Currently the service returns images through a "Header: location" redirect. So there is the initial HTTP request for the "src" call and then a second request for the final resized image. (It does add multiple requests, which is not great, but it does mean that the individual images could be cached through a CDN.)
 
 ## Demo
 
