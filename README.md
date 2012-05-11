@@ -30,11 +30,22 @@ The percentage widths are calculated by combining the percentages of all of the 
 
 There's no perfect solution for serving up images for responsive websites. This method, of course, has it's caveats.
 
-- One must know _all_ the possible percentage sizes of an image's containing element in all media-query ranges. (This of course takes some calculation - which can be tedious - but it is not difficult.)
-- This method requires Javascript to send the browser's screen width to the server.
-- The client's screen width is stored in the server session so the first virgin load will source all images at whichever resolution is determined by the code - full resolution, mobile-first reduced images, etc. (Currently the script returns full resolution images.)
-- The script returns images through a "Header: location" redirect. So there is the initial HTTP request for the "src" call and then a second request for the final resized image. It does add multiple requests, which is not great, but it does allow for the individual images to be be cached through a CDN.
-- The script resizes images rounded up to the nearest 20 pixel modulo, so as to save on processing load.(This can be changed in the configuration variables.)
+- This method requires Javascript to send the browser's clientWidth value to the server.
+- Without the clientWidth data being sent or stored in the server session variable (first virgin load or no-Javascript browser) all images are resized to a mobile-friendly baseline width in the code.
+- The script returns images through a "Header: location" redirect. So there is the initial HTTP request for the "src" call and then a second request for the final resized image. A redirect and two HTTP requests per image is not great, but it does allow for the final individual images to be be cached through a CDN.
+- One must know _all_ the possible percentage sizes of an image's containing element in all media-query ranges to properly use this method. (This of course takes some calculation - which can be tedious - but it is not difficult.)
+
+## Features
+
+- There is a baseline screen width for processing images without knowing the browser's clientWidth value. Currently the default it is set to 640px to minimise on file-size for low-bandwidth/narrow-screen devices but also to retain enough quality when images are embiggened on wider-screen devices (monitors, TVs, etc). This can be adjusted in the settings.
+- The script resizes images rounded up to the nearest 20 pixel value, so as to save on processing load. This can be adjusted in the settings.
+- It works with CSS background images. Yay! (Have to test CSS sprites still, but should work as well).
+
+## Notes
+
+- Scrollbars reduce the clientWidth of the screen, so when scollbars are present images may be a bit over the 20px range allowed for in the code.
+- Image resizing can be processor intensive of course, especially when a page has many, many images which have not been processed previously. Make sure your server can handle your specific processing load to avoid unrendered images.
+- It is best not to use large, uncompressed images. Instead save large, lightly compressed images with reasonable compression before using on a live site. If the baseline variable is not set and the clientWidth cannot be read the original image is set as the default download, which of course kills low-bandwidth connections and increases page-weight dramatically.
 
 ## Demo
 
