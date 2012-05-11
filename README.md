@@ -32,9 +32,9 @@ There's no perfect solution for serving up images for responsive websites. This 
 
 - One must know _all_ the possible percentage sizes of an image's containing element in all media-query ranges. (This of course takes some calculation - which can be tedious - but it is not difficult.)
 - This method requires Javascript to send the browser's screen width to the server.
-- The client's screen width is stored in the server session so the first virgin load will source all images at whichever resolution is determined by the code - full resolution, mobile-first reduced images, etc. (Currently the {src_ctrl} returns full resolution images.)
-- Currently the service returns images through a "Header: location" redirect. So there is the initial HTTP request for the "src" call and then a second request for the final resized image. (It does add multiple requests, which is not great, but it does mean that the individual images could be cached through a CDN.)
-- Currently the script resizes images rounded up to the nearest 20 pixel modulo, so as to save on processing load.(This can be changed in the configuration variables.)
+- The client's screen width is stored in the server session so the first virgin load will source all images at whichever resolution is determined by the code - full resolution, mobile-first reduced images, etc. (Currently the script returns full resolution images.)
+- The script returns images through a "Header: location" redirect. So there is the initial HTTP request for the "src" call and then a second request for the final resized image. It does add multiple requests, which is not great, but it does allow for the individual images to be be cached through a CDN.
+- The script resizes images rounded up to the nearest 20 pixel modulo, so as to save on processing load.(This can be changed in the configuration variables.)
 
 ## Demo
 

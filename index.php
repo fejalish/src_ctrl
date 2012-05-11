@@ -8,8 +8,11 @@
 	$max_quality = 92;
 	//nearest unit to ceiling out on for resized image width
 	$nearest = 20;
-	//can set default image size here as well, mobile first focus
-	//		for first load or browsers with no JS
+	//set baseline width here
+	//	defaulting to 640px width to provide small-ish images for low-bandwidth/narrow screens
+	//	but also reasonable size/quality images so as not to look too poorly when blown up in wide screens
+	$baseline = 640;
+	//default empty image
 	$mt = $local_host."/mt.gif";
 	//whitelist of domains
 	require_once('whitelist.php');
@@ -22,7 +25,7 @@
 		if( isset($_SESSION["clientWidth"]) && is_numeric($_SESSION["clientWidth"]) ){
 			$w = $_SESSION["clientWidth"];
 		} else {
-			$w = "undefined";
+			$w = $baseline;
 		}
 		session_write_close();		
 		
@@ -147,13 +150,35 @@
 														$quality = $max_quality;
 													}
 												}
-												//output resized file
-												exec("convert $local_input -strip -quality $quality  -resize $final_width $local_output");
+												//output resized file												
+												system("convert $local_input -strip -quality $quality  -resize $final_width $local_output");
+
+												//error code to check if get error status message from convert call
+												//uncomment if need to see results
+												/*
+												$retval = "";
+												system("convert $local_input -strip -quality $quality  -resize $final_width $local_output", $retval);
+												
+												if($retval>0){
+													$log = "[" . date('y m d H:i:s') . "]\n";
+													$log .= $filename . "\n";
+													$log .= "convert $local_input -strip -quality $quality  -resize $final_width $local_output \n";
+													//$log .= "output: ". print_r($output, true) . "\n";
+													//$log .= "result: ". print_r($result, true) . "\n";
+													//$log .= "system: ". $system . "\n";
+													$log .= "retval: ". $retval . "\n";
+													$log .= "----\n";
+													$fp = fopen('error.log', 'at');
+													fwrite($fp, $log);
+													fclose($fp);
+												}
+												*/
 											}
+
 											//send new header for resized image
 											header("Location: $server_output");
 											exit;
-
+											
 										} //end if, if width is within specific range
 
 									} else {
@@ -164,7 +189,7 @@
 
 							} else {
 							//if cannot grep screen width from anywhere, just show original full image at source url
-							//or a shrunk version cause of mobile/first load, etc.?
+							//this will probably never be called since baseline is now set in code
 								//give back original unsanitised url
 								header("Location: $remote_src_raw");
 								exit;

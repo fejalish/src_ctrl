@@ -1,4 +1,4 @@
 <?php
 	//add domains here
-	$whitelist = array("fejalish.com","jeyhun.com","erandod.com");
+	$whitelist = array("localhost","fejalish.com","headpoo.com");
 ?>
