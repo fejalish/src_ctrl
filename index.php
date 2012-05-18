@@ -1,8 +1,8 @@
 <?php
 
-	//the domain where the resized images will be served from
-	//	this hopefully could be a CDN eventually
-	$local_host = "http://src.fejalish.com";
+	//config file
+	require_once('config.php');
+
 	//default image compression qualities
 	$quality = 60;
 	$max_quality = 92;

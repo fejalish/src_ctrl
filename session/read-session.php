@@ -1,4 +1,5 @@
 <?php
+	require_once('../config.php');
 	echo "read session:<br />";
 	session_start();
 	echo session_id() ."<br />";

@@ -1,4 +1,5 @@
 <?php
+	require_once('../config.php');
 	print_r($_SESSION);
 	session_start();
 	if(isset($_SESSION['clientWidth'])){
