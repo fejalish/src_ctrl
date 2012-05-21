@@ -1,7 +1,7 @@
 <?php
 	require_once('../config.php');
-	print_r($_SESSION);
 	session_start();
+	print_r($_SESSION);
 	if(isset($_SESSION['clientWidth'])){
 		unset($_SESSION['clientWidth']);
 	}

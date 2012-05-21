@@ -104,7 +104,7 @@
 								foreach ($s as &$value) {
 									$value = explode(",", $value);
 									foreach ($value as &$values) {
-										$i = split(":", $values);
+										$i = explode(":", $values);
 										$ranges[$d][$i[0]] = $i[1];
 									}
 									$d++;
@@ -120,14 +120,19 @@
 										$max = ($range["max"]=="*") ? 99999 : $range["max"];
 									
 										//if width is within specific range of mix and max
-										if( $w >= $range["min"] && $w < $max){									
-											$img_width = exec("identify -format '%w' $local_input");
-											$target_width = ceil( ($w * $range["per"])  / $nearest ) * $nearest;									
+										if( $w >= $range["min"] && $w < $max){
+
 											//if output folder doesn't exist yet, create it
 											if (!is_dir($local_output)) {
 												mkdir($local_output, 0755, true);
 											}
-											
+
+											//set up image with imagick
+											$image = new Imagick($local_input);
+											$img_width = $image->getImageWidth();
+
+											$target_width = ceil( ($w * $range["per"])  / $nearest ) * $nearest;
+
 											$final_width = $img_width;
 											//if actual image width is greater than desired width
 											if($img_width > $target_width){
@@ -141,6 +146,7 @@
 											//check to see if resized image exists
 											if (!file_exists($local_output)) {
 
+												/*
 												//if quality is set in ranges
 												if(isset($range["quality"])){
 													//check if quality is below max
@@ -150,8 +156,27 @@
 														$quality = $max_quality;
 													}
 												}
+												*/
+
+												//output resized image
+												//FILTER_CATROM
+												//FILTER_LANCZOS
+										        //$image->resizeImage(, ,Imagick::FILTER_CATROM,1);
+
+									        	//calc width, in case passing 0 is causing the errors
+									        	$final_height = round( $image->getImageHeight() * ($final_width/$img_width) );
+
+										        try {
+											        $image->scaleImage($final_width,$final_height,true);
+											        $image->writeImage($local_output);
+											        $image->clear();
+											        $image->destroy();
+											    } catch(Exception $e){
+											    	echo 'Caught exception: ',  $e->getMessage(), "\n";
+											    }
+
 												//output resized file												
-												system("convert $local_input -strip -quality $quality  -resize $final_width $local_output");
+												//system("convert $local_input -strip -quality $quality  -resize $final_width $local_output");
 
 												//error code to check if get error status message from convert call
 												//uncomment if need to see results

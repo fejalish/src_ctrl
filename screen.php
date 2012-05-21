@@ -5,7 +5,6 @@
 	if( isset($q['cw']) && is_numeric($q['cw']) ){
 		$_SESSION['clientWidth'] = $q['cw'];
 	}
-	echo $q['cw']." ".$_SESSION['clientWidth'];
 	session_write_close();
 	header('Content-type: image/gif');
 	readfile($local_host.'/screen.gif');

@@ -2,7 +2,7 @@
 
 {src_ctrl} is a server side image resizer for use with responsive websites.
 
-It uses a combination of Javascript, server side scripting (PHP) and .htaccess rewrites to serve up custom resized images to fit a web page's responsive layout.
+It uses a combination of Javascript, server side scripting (PHP with imagick) and .htaccess rewrites to serve up custom resized images to fit a web page's responsive layout.
 
 The service works by comparing the client's screen width against the range of percentage widths that an image's containing element is set at through the CSS's various media-query break-points.
 
