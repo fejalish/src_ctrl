@@ -1,5 +1,7 @@
 <?php
 
+	$debug = false;
+
 	//config file
 	require_once('config.php');
 
@@ -89,10 +91,14 @@
 							fclose($file);
 						}
 
-						//check image properties for mime type
-						$props = getimagesize($local_input);
-						//if mime type is image, process it
-						if(strpos($props['mime'], 'image')!== false && strpos($props['mime'], 'image') >= 0){
+						/*
+						$finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
+						finfo_file($finfo, $filename)
+						finfo_close($finfo)
+						*/
+
+						$mime = image_type_to_mime_type(exif_imagetype($local_input));
+						if(strpos($mime, 'image')!== false && strpos($mime, 'image') >= 0){
 						
 							//only need to calculate this if width is set
 							if($w!="undefined"){
@@ -112,8 +118,8 @@
 						
 								//compare screen width to values in ranges
 								foreach ($ranges as &$range){
-									//make sure have all the required values we need - min, max, and per or px
-									//don't need pixel measurements here cause would need exact dimensions, not percentage and ranges...
+									//make sure have all the required values we need - min, max, and per
+									//don't actually need quality since it's not used in Imagick at all...
 									if( ( isset($range["min"]) && is_numeric($range["min"]) ) && ( isset($range["max"]) && ( is_numeric($range["max"]) || $range["max"]=="*") ) && ( isset($range["per"]) && is_numeric($range["per"]) ) ){
 
 										//check in case max is set to "all"
@@ -146,58 +152,23 @@
 											//check to see if resized image exists
 											if (!file_exists($local_output)) {
 
-												/*
-												//if quality is set in ranges
-												if(isset($range["quality"])){
-													//check if quality is below max
-													if($range["quality"]<$max_quality){
-														$quality = $range["quality"];
-													} else {
-														$quality = $max_quality;
-													}
-												}
-												*/
-
 												//output resized image
 												//FILTER_CATROM
 												//FILTER_LANCZOS
-										        //$image->resizeImage(, ,Imagick::FILTER_CATROM,1);
+												//$image->resizeImage(, ,Imagick::FILTER_CATROM,1);
 
-									        	//calc width, in case passing 0 is causing the errors
-									        	$final_height = round( $image->getImageHeight() * ($final_width/$img_width) );
+												//calc width, in case passing 0 is causing the errors
+												$final_height = round( $image->getImageHeight() * ($final_width/$img_width) );
 
-										        try {
-											        $image->scaleImage($final_width,$final_height,true);
-											        $image->writeImage($local_output);
-											        $image->clear();
-											        $image->destroy();
-											    } catch(Exception $e){
-											    	echo 'Caught exception: ',  $e->getMessage(), "\n";
-											    }
-
-												//output resized file												
-												//system("convert $local_input -strip -quality $quality  -resize $final_width $local_output");
-
-												//error code to check if get error status message from convert call
-												//uncomment if need to see results
-												/*
-												$retval = "";
-												system("convert $local_input -strip -quality $quality  -resize $final_width $local_output", $retval);
-												
-												if($retval>0){
-													$log = "[" . date('y m d H:i:s') . "]\n";
-													$log .= $filename . "\n";
-													$log .= "convert $local_input -strip -quality $quality  -resize $final_width $local_output \n";
-													//$log .= "output: ". print_r($output, true) . "\n";
-													//$log .= "result: ". print_r($result, true) . "\n";
-													//$log .= "system: ". $system . "\n";
-													$log .= "retval: ". $retval . "\n";
-													$log .= "----\n";
-													$fp = fopen('error.log', 'at');
-													fwrite($fp, $log);
-													fclose($fp);
+												try {
+													$image->scaleImage($final_width,$final_height,true);
+													$image->writeImage($local_output);
+													$image->clear();
+													$image->destroy();
+												} catch(Exception $e){
+													echo 'Caught exception: ',  $e->getMessage(), "\n";
 												}
-												*/
+
 											}
 
 											//send new header for resized image
@@ -208,7 +179,7 @@
 
 									} else {
 									//if missing any required paramters output a blank image
-										showMt();
+										showMt("missing required parameters");
 									}
 								} //end foreach
 
@@ -221,7 +192,7 @@
 							}
 						} else {
 							//end if, if mime type is not image
-							showMt();
+							showMt("incorrect mime type");
 						}
 
 						//if domain is in whitelist, break out of foreach
@@ -248,22 +219,26 @@
 
 			//final check, if remote domain is not in whitelist
 			if ($c>count($whitelist)) {
-				showMt();
+				showMt("domain not in whitelist");
 			}
 
 		} else {
 			//end if, if src is not in query
 			//this will basically never happen currently cause htaccess does not pass through if not a proper image extension
-			showMt();
+			showMt("src not in query");
 		}
 	
 	} //end request uri check
 
-	function showMt(){
+	function showMt($e){
 		//output blank gif for cases where no there is no image
-		header('Content-type: image/gif');
-		readfile($GLOBALS["mt"]);
-		exit;
+		if($debug){
+			header('Content-type: image/gif');
+			readfile($GLOBALS["mt"]);
+			exit;
+		} else {
+			echo $e."<br />";
+		}
 	}
 
 ?>

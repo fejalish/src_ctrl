@@ -40,6 +40,7 @@ There's no perfect solution for serving up images for responsive websites. This 
 - There is a baseline screen width for processing images without knowing the browser's clientWidth value. Currently the default it is set to 640px to minimise on file-size for low-bandwidth/narrow-screen devices but also to retain enough quality when images are embiggened on wider-screen devices (monitors, TVs, etc). This can be adjusted in the settings.
 - The script resizes images rounded up to the nearest 20 pixel value, so as to save on processing load. This can be adjusted in the settings.
 - It works with CSS background images. Yay! (Have to test CSS sprites still, but should work as well).
+- There's also a basic flush call to clear the original image from the resize server as well as all the resized images. Here is a sample URL: http://src.fejalish.com/{f}/http://src.yourdomain.com/images/filename.jpg
 
 ## Notes
 
