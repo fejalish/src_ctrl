@@ -30,6 +30,28 @@ ErrorDocument 404 /404.html
   RewriteRule (\{.*\}) index.php?range=$1&src=%1 [L]
 </IfModule>
 
+
+
+
+
+# ----------------------------------------------------------------------
+# Expires headers (for better cache control), from HTML 5 Boilerplate
+# ----------------------------------------------------------------------
+
+# If you don't use filenames to version, lower the CSS  and JS to something like
+#   "access plus 1 month" or so.
+
+<IfModule mod_expires.c>
+  ExpiresActive on
+  ExpiresDefault                          "access plus 1 month"
+# Media: images, video, audio
+  ExpiresByType image/gif                 "access plus 1 month"
+  ExpiresByType image/png                 "access plus 1 month"
+  ExpiresByType image/jpg                 "access plus 1 month"
+  ExpiresByType image/jpeg                "access plus 1 month"
+</IfModule>
+
+
 # ----------------------------------------------------------------------
 # Gzip compression, from HTML 5 Boilerplate
 # ----------------------------------------------------------------------
@@ -77,3 +99,13 @@ ErrorDocument 404 /404.html
   </IfModule>
 
 </IfModule>
+
+# ----------------------------------------------------------------------
+# ETag removal, from HTML 5 Boilerplate
+# ----------------------------------------------------------------------
+
+<IfModule mod_headers.c>
+  Header unset ETag
+</IfModule>
+
+FileETag None
